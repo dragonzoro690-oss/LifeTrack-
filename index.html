@@ -1,0 +1,226 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LifeTrack - Personal Finance & Habit Dashboard</title>
+    <link rel="stylesheet" href="styles/main.css">
+    <link rel="stylesheet" href="styles/dashboard.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div id="app" class="app-container">
+        <!-- Navigation Sidebar -->
+        <nav class="sidebar">
+            <div class="logo">
+                <h1>LifeTrack</h1>
+            </div>
+            <ul class="nav-menu">
+                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a></li>
+                <li><a href="#finances" class="nav-link" data-section="finances">Finances</a></li>
+                <li><a href="#habits" class="nav-link" data-section="habits">Habits</a></li>
+                <li><a href="#ai-advisor" class="nav-link" data-section="ai-advisor">AI Advisor</a></li>
+                <li><a href="#settings" class="nav-link" data-section="settings">Settings</a></li>
+            </ul>
+        </nav>
+
+        <!-- Main Content Area -->
+        <main class="main-content">
+            <!-- Dashboard Section -->
+            <section id="dashboard" class="content-section active">
+                <h2>Dashboard</h2>
+                <div class="dashboard-grid">
+                    <div class="card balance-card">
+                        <h3>Total Balance</h3>
+                        <div class="balance-amount" id="totalBalance">$0.00</div>
+                        <div class="balance-details">
+                            <span class="income">Income: <span id="totalIncome">$0</span></span>
+                            <span class="expense">Expense: <span id="totalExpense">$0</span></span>
+                        </div>
+                    </div>
+
+                    <div class="card stats-card">
+                        <h3>This Month Overview</h3>
+                        <div class="stats-grid">
+                            <div class="stat-item">
+                                <span class="stat-label">Transactions</span>
+                                <span class="stat-value" id="transactionCount">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Habits Tracked</span>
+                                <span class="stat-value" id="habitsCount">0</span>
+                            </div>
+                            <div class="stat-item">
+                                <span class="stat-label">Streak Days</span>
+                                <span class="stat-value" id="streakDays">0</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card chart-card">
+                        <h3>Spending by Category</h3>
+                        <canvas id="categoryChart"></canvas>
+                    </div>
+
+                    <div class="card chart-card">
+                        <h3>Monthly Trend</h3>
+                        <canvas id="trendChart"></canvas>
+                    </div>
+
+                    <div class="card habits-overview">
+                        <h3>Habit Streaks</h3>
+                        <div id="habitsList" class="habits-list"></div>
+                    </div>
+
+                    <div class="card quick-actions">
+                        <h3>Quick Actions</h3>
+                        <button class="btn btn-primary" onclick="app.navigateTo('finances')">+ Add Transaction</button>
+                        <button class="btn btn-secondary" onclick="app.navigateTo('habits')">+ Log Habit</button>
+                        <button class="btn btn-accent" onclick="app.navigateTo('ai-advisor')">💡 Get AI Advice</button>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Finances Section -->
+            <section id="finances" class="content-section">
+                <h2>Finance Manager</h2>
+                <div class="finance-container">
+                    <div class="card add-transaction-card">
+                        <h3>Add Transaction</h3>
+                        <form id="transactionForm">
+                            <input type="text" id="description" placeholder="Description" required>
+                            <input type="number" id="amount" placeholder="Amount" step="0.01" required>
+                            <select id="category" required>
+                                <option value="">Select Category</option>
+                                <option value="food">Food & Dining</option>
+                                <option value="transport">Transport</option>
+                                <option value="utilities">Utilities</option>
+                                <option value="entertainment">Entertainment</option>
+                                <option value="health">Health & Fitness</option>
+                                <option value="shopping">Shopping</option>
+                                <option value="income">Income</option>
+                                <option value="other">Other</option>
+                            </select>
+                            <select id="type" required>
+                                <option value="expense">Expense</option>
+                                <option value="income">Income</option>
+                            </select>
+                            <input type="date" id="date" required>
+                            <button type="submit" class="btn btn-primary">Add Transaction</button>
+                        </form>
+                    </div>
+
+                    <div class="card transactions-list-card">
+                        <h3>Recent Transactions</h3>
+                        <div id="transactionsList" class="transactions-list"></div>
+                    </div>
+
+                    <div class="card category-breakdown">
+                        <h3>Category Breakdown</h3>
+                        <canvas id="categoryBreakdown"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Habits Section -->
+            <section id="habits" class="content-section">
+                <h2>Habit Tracker</h2>
+                <div class="habits-container">
+                    <div class="card add-habit-card">
+                        <h3>Create New Habit</h3>
+                        <form id="habitForm">
+                            <input type="text" id="habitName" placeholder="Habit name (e.g., Exercise, Read)" required>
+                            <textarea id="habitDescription" placeholder="Description" rows="3"></textarea>
+                            <select id="habitFrequency" required>
+                                <option value="daily">Daily</option>
+                                <option value="weekly">Weekly</option>
+                                <option value="monthly">Monthly</option>
+                            </select>
+                            <button type="submit" class="btn btn-primary">Create Habit</button>
+                        </form>
+                    </div>
+
+                    <div class="card habits-tracking-card">
+                        <h3>Active Habits</h3>
+                        <div id="habitsTracking" class="habits-tracking"></div>
+                    </div>
+
+                    <div class="card habit-stats">
+                        <h3>Habit Statistics</h3>
+                        <canvas id="habitStatsChart"></canvas>
+                    </div>
+                </div>
+            </section>
+
+            <!-- AI Advisor Section -->
+            <section id="ai-advisor" class="content-section">
+                <h2>AI Investment Advisor</h2>
+                <div class="ai-advisor-container">
+                    <div class="card ai-analysis">
+                        <h3>Financial Analysis</h3>
+                        <div id="aiAnalysis" class="ai-content">
+                            <p>Loading your financial data...</p>
+                        </div>
+                    </div>
+
+                    <div class="card ai-recommendations">
+                        <h3>Investment Recommendations</h3>
+                        <div id="aiRecommendations" class="ai-content">
+                            <p>Generate recommendations based on your spending patterns...</p>
+                        </div>
+                    </div>
+
+                    <div class="card ai-chat">
+                        <h3>Ask AI Advisor</h3>
+                        <form id="aiChatForm">
+                            <textarea id="aiQuestion" placeholder="Ask a question about your finances..." rows="4"></textarea>
+                            <button type="submit" class="btn btn-primary">Get Advice</button>
+                        </form>
+                        <div id="aiResponse" class="ai-response"></div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Settings Section -->
+            <section id="settings" class="content-section">
+                <h2>Settings</h2>
+                <div class="settings-container">
+                    <div class="card settings-card">
+                        <h3>Data Management</h3>
+                        <button class="btn btn-secondary" onclick="app.exportData()">Export Data (JSON)</button>
+                        <button class="btn btn-secondary" onclick="app.importData()">Import Data</button>
+                        <button class="btn btn-danger" onclick="app.clearAllData()">Clear All Data</button>
+                    </div>
+
+                    <div class="card settings-card">
+                        <h3>Preferences</h3>
+                        <label>
+                            <input type="checkbox" id="darkMode"> Dark Mode
+                        </label>
+                        <label>
+                            <input type="checkbox" id="notifications"> Enable Notifications
+                        </label>
+                        <label>
+                            Currency:
+                            <select id="currency">
+                                <option value="USD">$ USD</option>
+                                <option value="EUR">€ EUR</option>
+                                <option value="GBP">£ GBP</option>
+                                <option value="INR">₹ INR</option>
+                            </select>
+                        </label>
+                    </div>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/storage.js"></script>
+    <script src="js/finance.js"></script>
+    <script src="js/habits.js"></script>
+    <script src="js/ai-advisor.js"></script>
+    <script src="js/charts.js"></script>
+    <script src="js/app.js"></script>
+</body>
+</html>

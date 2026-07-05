@@ -3,217 +3,701 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>LifeTrack - Personal Finance & Habit Dashboard</title>
-    <link rel="stylesheet" href="styles/main.css">
-    <link rel="stylesheet" href="styles/dashboard.css">
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta name="description" content="LifeTrack - Your personal finance and habit tracking companion">
+    <meta name="theme-color" content="#0f172a">
+    <title>LifeTrack - Your Life, Tracked</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.9.1/dist/chart.min.js"></script>
+    <link rel="manifest" href="manifest.json">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-tertiary: #334155;
+            --text-primary: #e2e8f0;
+            --text-secondary: #cbd5e1;
+            --border: #475569;
+        }
+
+        html, body {
+            height: 100%;
+            width: 100%;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, var(--bg-primary) 0%, #1a1f35 100%);
+            color: var(--text-primary);
+            line-height: 1.6;
+            overflow-x: hidden;
+        }
+
+        /* Navbar */
+        .navbar {
+            background: linear-gradient(90deg, var(--bg-secondary) 0%, #0f172a 100%);
+            padding: 1rem 2rem;
+            position: sticky;
+            top: 0;
+            z-index: 1000;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            border-bottom: 1px solid var(--border);
+        }
+
+        .navbar-content {
+            max-width: 1400px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 2rem;
+            flex-wrap: wrap;
+        }
+
+        .navbar h1 {
+            font-size: 1.5rem;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        .nav-buttons {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        /* Container */
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+
+        /* Buttons */
+        .btn {
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.875rem;
+            transition: all 0.3s ease;
+            white-space: nowrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .btn-success:hover {
+            background: #059669;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.4);
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+
+        .btn-danger:hover {
+            background: #dc2626;
+            transform: translateY(-2px);
+        }
+
+        .btn:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* Cards */
+        .card {
+            background: var(--bg-secondary);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            border: 1px solid var(--border);
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s ease;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 8px 30px rgba(99, 102, 241, 0.15);
+        }
+
+        .card h2 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        .card h3 {
+            font-size: 1.1rem;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+
+        /* Grid */
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-card {
+            background: linear-gradient(135deg, var(--bg-secondary) 0%, #1a3a4a 100%);
+            border-radius: 12px;
+            padding: 1.5rem;
+            border: 1px solid var(--border);
+            text-align: center;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .stat-value {
+            font-size: 2rem;
+            font-weight: bold;
+            background: linear-gradient(135deg, #6366f1, #a855f7);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* Forms */
+        form {
+            display: grid;
+            gap: 1rem;
+        }
+
+        input, select, textarea {
+            padding: 0.75rem;
+            border-radius: 6px;
+            border: 1px solid var(--border);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.1);
+            background: var(--bg-secondary);
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+
+        /* Lists */
+        .list-item {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 4px solid var(--primary);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .list-item:hover {
+            background: var(--bg-primary);
+            transform: translateX(4px);
+        }
+
+        .list-item.income {
+            border-left-color: var(--secondary);
+        }
+
+        .list-item.expense {
+            border-left-color: var(--danger);
+        }
+
+        .list-item-info h4 {
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .list-item-meta {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .list-item-value {
+            font-weight: bold;
+            font-size: 1.1rem;
+        }
+
+        .list-item.income .list-item-value {
+            color: var(--secondary);
+        }
+
+        .list-item.expense .list-item-value {
+            color: var(--danger);
+        }
+
+        /* Habit Item */
+        .habit-item {
+            padding: 1rem;
+            margin-bottom: 0.5rem;
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            border-left: 4px solid #a855f7;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .habit-item.completed {
+            border-left-color: var(--secondary);
+            background: rgba(16, 185, 129, 0.1);
+        }
+
+        .habit-item:hover {
+            background: var(--bg-primary);
+            transform: translateX(4px);
+        }
+
+        .habit-info h4 {
+            margin-bottom: 0.25rem;
+            color: var(--text-primary);
+        }
+
+        .habit-streak {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .habit-streak-count {
+            color: #f59e0b;
+            font-weight: bold;
+        }
+
+        /* Pagination */
+        .pages {
+            display: none;
+        }
+
+        .pages.active {
+            display: block;
+        }
+
+        /* Notifications */
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            z-index: 10000;
+            animation: slideIn 0.3s ease;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            display: none;
+        }
+
+        .notification.show {
+            display: block;
+        }
+
+        .notification.success {
+            background: var(--secondary);
+            color: white;
+        }
+
+        .notification.error {
+            background: var(--danger);
+            color: white;
+        }
+
+        .notification.info {
+            background: var(--primary);
+            color: white;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* Modal */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 5000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(0, 0, 0, 0.7);
+            align-items: center;
+            justify-content: center;
+        }
+
+        .modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            background: var(--bg-secondary);
+            padding: 2rem;
+            border-radius: 12px;
+            width: 90%;
+            max-width: 500px;
+            max-height: 90vh;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-header h2 {
+            margin: 0;
+        }
+
+        .close {
+            background: none;
+            border: none;
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            cursor: pointer;
+        }
+
+        /* Chart Container */
+        .chart-container {
+            position: relative;
+            height: 300px;
+            margin-top: 1rem;
+        }
+
+        /* Chat */
+        .chat-container {
+            background: var(--bg-tertiary);
+            border-radius: 8px;
+            padding: 1rem;
+            height: 400px;
+            overflow-y: auto;
+            margin-top: 1rem;
+        }
+
+        .chat-message {
+            margin-bottom: 1rem;
+            padding: 1rem;
+            border-radius: 8px;
+            background: var(--bg-secondary);
+        }
+
+        .chat-message.user {
+            background: rgba(99, 102, 241, 0.2);
+            border-left: 4px solid var(--primary);
+        }
+
+        .chat-message.ai {
+            background: rgba(16, 185, 129, 0.2);
+            border-left: 4px solid var(--secondary);
+        }
+
+        .chat-message strong {
+            color: var(--primary);
+        }
+
+        .chat-message.ai strong {
+            color: var(--secondary);
+        }
+
+        /* Responsive */
+        @media (max-width: 768px) {
+            .navbar-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+
+            .container {
+                padding: 1rem;
+            }
+
+            .stats-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .grid {
+                grid-template-columns: 1fr;
+            }
+
+            .nav-buttons {
+                width: 100%;
+                flex-direction: column;
+            }
+
+            .btn {
+                width: 100%;
+                text-align: center;
+            }
+        }
+
+        /* Loading */
+        .loading {
+            display: inline-block;
+            width: 20px;
+            height: 20px;
+            border: 3px solid rgba(99, 102, 241, 0.3);
+            border-radius: 50%;
+            border-top-color: var(--primary);
+            animation: spin 1s ease-in-out infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--text-secondary);
+        }
+
+        .empty-state svg {
+            width: 80px;
+            height: 80px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        /* Badge */
+        .badge {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            margin-right: 0.5rem;
+        }
+
+        .badge-success {
+            background: rgba(16, 185, 129, 0.2);
+            color: var(--secondary);
+        }
+
+        .badge-warning {
+            background: rgba(245, 158, 11, 0.2);
+            color: var(--warning);
+        }
+
+        .badge-danger {
+            background: rgba(239, 68, 68, 0.2);
+            color: var(--danger);
+        }
+    </style>
 </head>
 <body>
-    <div id="app" class="app-container">
-        <!-- Navigation Sidebar -->
-        <nav class="sidebar">
-            <div class="logo">
-                <h1>LifeTrack</h1>
+    <!-- Navbar -->
+    <nav class="navbar">
+        <div class="navbar-content">
+            <h1>🎯 LifeTrack</h1>
+            <div class="nav-buttons">
+                <button class="btn btn-primary" data-nav="dashboard">📊 Dashboard</button>
+                <button class="btn btn-primary" data-nav="finance">💰 Finance</button>
+                <button class="btn btn-primary" data-nav="habits">🎯 Habits</button>
+                <button class="btn btn-primary" data-nav="analytics">📈 Analytics</button>
+                <button class="btn btn-primary" data-nav="ai">🤖 AI Advisor</button>
+                <button class="btn btn-success" id="downloadDataBtn">📥 Download Data</button>
+                <button class="btn btn-success" id="downloadAppBtn">🚀 Download App</button>
             </div>
-            <ul class="nav-menu">
-                <li><a href="#dashboard" class="nav-link active" data-section="dashboard">Dashboard</a></li>
-                <li><a href="#finances" class="nav-link" data-section="finances">Finances</a></li>
-                <li><a href="#habits" class="nav-link" data-section="habits">Habits</a></li>
-                <li><a href="#ai-advisor" class="nav-link" data-section="ai-advisor">AI Advisor</a></li>
-                <li><a href="#settings" class="nav-link" data-section="settings">Settings</a></li>
-            </ul>
-        </nav>
+        </div>
+    </nav>
 
-        <!-- Main Content Area -->
-        <main class="main-content">
-            <!-- Dashboard Section -->
-            <section id="dashboard" class="content-section active">
-                <h2>Dashboard</h2>
-                <div class="dashboard-grid">
-                    <div class="card balance-card">
-                        <h3>Total Balance</h3>
-                        <div class="balance-amount" id="totalBalance">$0.00</div>
-                        <div class="balance-details">
-                            <span class="income">Income: <span id="totalIncome">$0</span></span>
-                            <span class="expense">Expense: <span id="totalExpense">$0</span></span>
-                        </div>
-                    </div>
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Dashboard Page -->
+        <div data-page="dashboard" class="pages active">
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <p class="stat-label">Total Balance</p>
+                    <p class="stat-value" id="totalBalance">$0.00</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Total Income</p>
+                    <p class="stat-value" id="totalIncome">$0.00</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Total Expenses</p>
+                    <p class="stat-value" id="totalExpenses">$0.00</p>
+                </div>
+                <div class="stat-card">
+                    <p class="stat-label">Financial Health</p>
+                    <p class="stat-value" id="financialHealth">0/100</p>
+                </div>
+            </div>
 
-                    <div class="card stats-card">
-                        <h3>This Month Overview</h3>
-                        <div class="stats-grid">
-                            <div class="stat-item">
-                                <span class="stat-label">Transactions</span>
-                                <span class="stat-value" id="transactionCount">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Habits Tracked</span>
-                                <span class="stat-value" id="habitsCount">0</span>
-                            </div>
-                            <div class="stat-item">
-                                <span class="stat-label">Streak Days</span>
-                                <span class="stat-value" id="streakDays">0</span>
-                            </div>
-                        </div>
-                    </div>
+            <div class="grid">
+                <div class="card">
+                    <h3>📊 Recent Transactions</h3>
+                    <div id="recentTransactions"></div>
+                </div>
+                <div class="card">
+                    <h3>🎯 Active Habits</h3>
+                    <div id="activeHabits"></div>
+                </div>
+            </div>
+        </div>
 
-                    <div class="card chart-card">
-                        <h3>Spending by Category</h3>
-                        <canvas id="categoryChart"></canvas>
-                    </div>
+        <!-- Finance Page -->
+        <div data-page="finance" class="pages">
+            <div class="grid">
+                <div class="card">
+                    <h2>💸 Add Transaction</h2>
+                    <form id="transactionForm">
+                        <input type="text" placeholder="Description" name="description" required>
+                        <input type="number" placeholder="Amount" name="amount" step="0.01" required>
+                        <select name="category" required>
+                            <option value="">Select Category</option>
+                            <option value="food">🍔 Food</option>
+                            <option value="transport">🚗 Transport</option>
+                            <option value="entertainment">🎬 Entertainment</option>
+                            <option value="utilities">💡 Utilities</option>
+                            <option value="healthcare">🏥 Healthcare</option>
+                            <option value="education">📚 Education</option>
+                            <option value="shopping">🛍️ Shopping</option>
+                            <option value="other">📌 Other</option>
+                        </select>
+                        <select name="type" required>
+                            <option value="expense">💸 Expense</option>
+                            <option value="income">💵 Income</option>
+                        </select>
+                        <input type="date" name="date">
+                        <button type="submit" class="btn btn-primary">➕ Add Transaction</button>
+                    </form>
+                </div>
 
-                    <div class="card chart-card">
-                        <h3>Monthly Trend</h3>
+                <div class="card">
+                    <h2>📋 Transactions History</h2>
+                    <div id="allTransactions"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Habits Page -->
+        <div data-page="habits" class="pages">
+            <div class="grid">
+                <div class="card">
+                    <h2>🎯 Create New Habit</h2>
+                    <form id="habitForm">
+                        <input type="text" placeholder="Habit Name (e.g., Morning Run)" name="habitName" required>
+                        <textarea placeholder="Description (optional)" name="habitDescription"></textarea>
+                        <select name="frequency" required>
+                            <option value="">Select Frequency</option>
+                            <option value="daily">📅 Daily</option>
+                            <option value="weekly">📆 Weekly</option>
+                            <option value="monthly">📊 Monthly</option>
+                        </select>
+                        <button type="submit" class="btn btn-primary">➕ Add Habit</button>
+                    </form>
+                </div>
+
+                <div class="card">
+                    <h2>🏆 Your Habits</h2>
+                    <div id="allHabits"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Analytics Page -->
+        <div data-page="analytics" class="pages">
+            <div class="card">
+                <h2>📊 Spending by Category</h2>
+                <div class="chart-container">
+                    <canvas id="categoryChart"></canvas>
+                </div>
+            </div>
+
+            <div class="grid">
+                <div class="card">
+                    <h3>📈 Monthly Trends</h3>
+                    <div class="chart-container">
                         <canvas id="trendChart"></canvas>
                     </div>
-
-                    <div class="card habits-overview">
-                        <h3>Habit Streaks</h3>
-                        <div id="habitsList" class="habits-list"></div>
-                    </div>
-
-                    <div class="card quick-actions">
-                        <h3>Quick Actions</h3>
-                        <button class="btn btn-primary" onclick="app.navigateTo('finances')">+ Add Transaction</button>
-                        <button class="btn btn-secondary" onclick="app.navigateTo('habits')">+ Log Habit</button>
-                        <button class="btn btn-accent" onclick="app.navigateTo('ai-advisor')">💡 Get AI Advice</button>
-                    </div>
                 </div>
-            </section>
-
-            <!-- Finances Section -->
-            <section id="finances" class="content-section">
-                <h2>Finance Manager</h2>
-                <div class="finance-container">
-                    <div class="card add-transaction-card">
-                        <h3>Add Transaction</h3>
-                        <form id="transactionForm">
-                            <input type="text" id="description" placeholder="Description" required>
-                            <input type="number" id="amount" placeholder="Amount" step="0.01" required>
-                            <select id="category" required>
-                                <option value="">Select Category</option>
-                                <option value="food">Food & Dining</option>
-                                <option value="transport">Transport</option>
-                                <option value="utilities">Utilities</option>
-                                <option value="entertainment">Entertainment</option>
-                                <option value="health">Health & Fitness</option>
-                                <option value="shopping">Shopping</option>
-                                <option value="income">Income</option>
-                                <option value="other">Other</option>
-                            </select>
-                            <select id="type" required>
-                                <option value="expense">Expense</option>
-                                <option value="income">Income</option>
-                            </select>
-                            <input type="date" id="date" required>
-                            <button type="submit" class="btn btn-primary">Add Transaction</button>
-                        </form>
-                    </div>
-
-                    <div class="card transactions-list-card">
-                        <h3>Recent Transactions</h3>
-                        <div id="transactionsList" class="transactions-list"></div>
-                    </div>
-
-                    <div class="card category-breakdown">
-                        <h3>Category Breakdown</h3>
-                        <canvas id="categoryBreakdown"></canvas>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Habits Section -->
-            <section id="habits" class="content-section">
-                <h2>Habit Tracker</h2>
-                <div class="habits-container">
-                    <div class="card add-habit-card">
-                        <h3>Create New Habit</h3>
-                        <form id="habitForm">
-                            <input type="text" id="habitName" placeholder="Habit name (e.g., Exercise, Read)" required>
-                            <textarea id="habitDescription" placeholder="Description" rows="3"></textarea>
-                            <select id="habitFrequency" required>
-                                <option value="daily">Daily</option>
-                                <option value="weekly">Weekly</option>
-                                <option value="monthly">Monthly</option>
-                            </select>
-                            <button type="submit" class="btn btn-primary">Create Habit</button>
-                        </form>
-                    </div>
-
-                    <div class="card habits-tracking-card">
-                        <h3>Active Habits</h3>
-                        <div id="habitsTracking" class="habits-tracking"></div>
-                    </div>
-
-                    <div class="card habit-stats">
-                        <h3>Habit Statistics</h3>
+                <div class="card">
+                    <h3>📊 Habit Progress</h3>
+                    <div class="chart-container">
                         <canvas id="habitStatsChart"></canvas>
                     </div>
                 </div>
-            </section>
+            </div>
+        </div>
 
-            <!-- AI Advisor Section -->
-            <section id="ai-advisor" class="content-section">
-                <h2>AI Investment Advisor</h2>
-                <div class="ai-advisor-container">
-                    <div class="card ai-analysis">
-                        <h3>Financial Analysis</h3>
-                        <div id="aiAnalysis" class="ai-content">
-                            <p>Loading your financial data...</p>
-                        </div>
+        <!-- AI Advisor Page -->
+        <div data-page="ai" class="pages">
+            <div class="card">
+                <h2>🤖 AI Financial Advisor</h2>
+                <p style="color: var(--text-secondary); margin-bottom: 1rem;">Get personalized financial suggestions and advice</p>
+                <form id="aiChatForm">
+                    <div style="display: grid; grid-template-columns: 1fr auto; gap: 0.5rem;">
+                        <input type="text" placeholder="Ask me anything about your finances..." name="question" required>
+                        <button type="submit" class="btn btn-primary">💬 Ask</button>
                     </div>
-
-                    <div class="card ai-recommendations">
-                        <h3>Investment Recommendations</h3>
-                        <div id="aiRecommendations" class="ai-content">
-                            <p>Generate recommendations based on your spending patterns...</p>
-                        </div>
-                    </div>
-
-                    <div class="card ai-chat">
-                        <h3>Ask AI Advisor</h3>
-                        <form id="aiChatForm">
-                            <textarea id="aiQuestion" placeholder="Ask a question about your finances..." rows="4"></textarea>
-                            <button type="submit" class="btn btn-primary">Get Advice</button>
-                        </form>
-                        <div id="aiResponse" class="ai-response"></div>
-                    </div>
-                </div>
-            </section>
-
-            <!-- Settings Section -->
-            <section id="settings" class="content-section">
-                <h2>Settings</h2>
-                <div class="settings-container">
-                    <div class="card settings-card">
-                        <h3>Data Management</h3>
-                        <button class="btn btn-secondary" onclick="app.exportData()">Export Data (JSON)</button>
-                        <button class="btn btn-secondary" onclick="app.importData()">Import Data</button>
-                        <button class="btn btn-danger" onclick="app.clearAllData()">Clear All Data</button>
-                    </div>
-
-                    <div class="card settings-card">
-                        <h3>Preferences</h3>
-                        <label>
-                            <input type="checkbox" id="darkMode"> Dark Mode
-                        </label>
-                        <label>
-                            <input type="checkbox" id="notifications"> Enable Notifications
-                        </label>
-                        <label>
-                            Currency:
-                            <select id="currency">
-                                <option value="USD">$ USD</option>
-                                <option value="EUR">€ EUR</option>
-                                <option value="GBP">£ GBP</option>
-                                <option value="INR">₹ INR</option>
-                            </select>
-                        </label>
-                    </div>
-                </div>
-            </section>
-        </main>
+                </form>
+                <div id="aiChatContainer" class="chat-container"></div>
+            </div>
+        </div>
     </div>
+
+    <!-- Notification -->
+    <div id="notification" class="notification"></div>
 
     <!-- Scripts -->
     <script src="js/storage.js"></script>
@@ -222,5 +706,32 @@
     <script src="js/ai-advisor.js"></script>
     <script src="js/charts.js"></script>
     <script src="js/app.js"></script>
+
+    <!-- Inline Minimal Modules (Fallback) -->
+    <script>
+        // Fallback if separate modules don't load
+        if (!window.storage) {
+            window.storage = {
+                getTransactions() { return JSON.parse(localStorage.getItem('transactions') || '[]'); },
+                getHabits() { return JSON.parse(localStorage.getItem('habits') || '[]'); },
+                get(key, def) { return JSON.parse(localStorage.getItem(key) || JSON.stringify(def)); },
+                save(key, data) { localStorage.setItem(key, JSON.stringify(data)); },
+                addTransaction(t) { 
+                    const trans = this.getTransactions();
+                    t.id = Date.now();
+                    trans.push(t);
+                    this.save('transactions', trans);
+                },
+                addHabit(h) {
+                    const habits = this.getHabits();
+                    h.id = Date.now();
+                    h.logs = [];
+                    h.streak = 0;
+                    habits.push(h);
+                    this.save('habits', habits);
+                }
+            };
+        }
+    </script>
 </body>
 </html>
